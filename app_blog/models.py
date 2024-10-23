@@ -9,20 +9,24 @@ from django.utils.text import slugify
 
 
 class Category(models.Model):
-    category = models.CharField(u'Категорія', max_length = 250, help_text=u'Максимум 250 символів')
-    slug = models.SlugField(u'Слаг', unique=True, blank=True, null=True)
+    category = models.CharField('Категорія', max_length=250, help_text='Максимум 250 символів')
+    slug = models.SlugField('Слаг')
+    objects = models.Manager()
 
     class Meta:
-        verbose_name = u'Категорія для публікації'
-        verbose_name_plural = u'Категорії для публікацій'
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.category)
-        super(Category, self).save(*args, **kwargs)
+        verbose_name = 'Категорія для публікації'
+        verbose_name_plural = 'Категорії для публікацій'
 
     def __str__(self):
         return self.category
+
+    def get_absolute_url(self):
+        try:
+            url = reverse('articles-category-list', kwargs={'slug': self.slug})
+        except Exception:
+            url = "/"
+        return url
+
 
 
 class Article(models.Model):
